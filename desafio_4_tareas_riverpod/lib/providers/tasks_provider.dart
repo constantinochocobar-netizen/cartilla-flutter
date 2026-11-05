@@ -4,13 +4,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class Tarea {
   final String titulo;
   final bool completada;
+  final String prioridad; // EXTRA: 'alta', 'media' o 'baja'
 
-  const Tarea({required this.titulo, this.completada = false});
+  const Tarea({required this.titulo, this.completada = false, this.prioridad = 'media'});
 
   // copyWith: crea una copia cambiando solo algunos campos
   Tarea copyWith({String? titulo, bool? completada}) => Tarea(
         titulo: titulo ?? this.titulo,
         completada: completada ?? this.completada,
+        prioridad: prioridad,
       );
 }
 
@@ -30,10 +32,10 @@ class TasksNotifier extends StateNotifier<TasksState> {
   TasksNotifier() : super(const TasksState());
 
   // Agregar una tarea — se crea un nuevo estado
-  void agregar(String titulo) {
+  void agregar(String titulo, {String prioridad = 'media'}) {
     if (titulo.trim().isEmpty) return;
     state = TasksState(
-      tareas: [...state.tareas, Tarea(titulo: titulo.trim())],
+      tareas: [...state.tareas, Tarea(titulo: titulo.trim(), prioridad: prioridad)],
     );
   }
 

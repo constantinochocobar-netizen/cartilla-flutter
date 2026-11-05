@@ -13,6 +13,21 @@ class TareasScreen extends ConsumerStatefulWidget {
 class _TareasScreenState extends ConsumerState<TareasScreen> {
   final TextEditingController _ctrl = TextEditingController();
 
+  // EXTRA: prioridad elegida para la próxima tarea
+  String _prioridad = 'media';
+
+  // Color de cada prioridad
+  MaterialColor _colorPrioridad(String prioridad) {
+    switch (prioridad) {
+      case 'alta':
+        return Colors.red;
+      case 'baja':
+        return Colors.green;
+      default:
+        return Colors.orange;
+    }
+  }
+
   @override
   void dispose() {
     _ctrl.dispose(); // liberar la memoria del controlador
@@ -23,7 +38,7 @@ class _TareasScreenState extends ConsumerState<TareasScreen> {
     final texto = _ctrl.text.trim();
     if (texto.isEmpty) return;
     // ref.read: ejecuta ACCIONES sin reconstruir el widget
-    ref.read(tasksProvider.notifier).agregar(texto);
+    ref.read(tasksProvider.notifier).agregar(texto, prioridad: _prioridad);
     _ctrl.clear();
   }
 
@@ -57,7 +72,27 @@ class _TareasScreenState extends ConsumerState<TareasScreen> {
             ],
           ),
         ),
-        Text('${state.pendientes} pendientes de ${state.tareas.length}'),
+        // EXTRA: elegir la prioridad (alta / media / baja)
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: Row(
+            children: [
+              const Text('Prioridad:'),
+              const SizedBox(width: 12),
+              DropdownButton<String>(
+                value: _prioridad,
+                items: const [
+                  DropdownMenuItem(value: 'alta', child: Text('🔴 Alta')),
+                  DropdownMenuItem(value: 'media', child: Text('🟠 Media')),
+                  DropdownMenuItem(value: 'baja', child: Text('🟢 Baja')),
+                ],
+                onChanged: (valor) => setState(() => _prioridad = valor ?? 'media'),
+              ),
+              const SizedBox(width: 12),
+              Expanded(child: Text('${state.pendientes} pendientes de ${state.tareas.length}', textAlign: TextAlign.end)),
+            ],
+          ),
+        ),
         const SizedBox(height: 8),
 
         // ── Lista de tareas ─────────────────────────────────────────
@@ -68,7 +103,11 @@ class _TareasScreenState extends ConsumerState<TareasScreen> {
                   itemCount: state.tareas.length,
                   itemBuilder: (ctx, i) {
                     final tarea = state.tareas[i];
+                    final color = _colorPrioridad(tarea.prioridad);
                     return ListTile(
+                      // Fondo suave del color de la prioridad
+                      tileColor: color.shade50,
+                      subtitle: Text('Prioridad ${tarea.prioridad}', style: TextStyle(color: color, fontWeight: FontWeight.bold)),
                       leading: Checkbox(
                         value: tarea.completada,
                         onChanged: (_) => ref.read(tasksProvider.notifier).toggleCompletada(i),
