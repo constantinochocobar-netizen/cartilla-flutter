@@ -12,7 +12,6 @@ class TareasScreen extends StatefulWidget {
 class _TareasScreenState extends State<TareasScreen> {
   final TareasService _service = TareasService();
   final TextEditingController _ctrl = TextEditingController();
-  late final Stream<QuerySnapshot> _stream = _service.tareasDelUsuario();
 
   @override
   void dispose() {
@@ -49,7 +48,6 @@ class _TareasScreenState extends State<TareasScreen> {
                     prefixIcon: const Icon(Icons.edit),
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                   ),
-                  onSubmitted: (_) => _agregar(),
                 ),
               ),
               const SizedBox(width: 8),
@@ -57,10 +55,10 @@ class _TareasScreenState extends State<TareasScreen> {
             ],
           ),
         ),
-        // StreamBuilder: la lista se actualiza en tiempo real
+        // Avance: con StreamBuilder la lista se actualiza sola en tiempo real
         Expanded(
           child: StreamBuilder<QuerySnapshot>(
-            stream: _stream,
+            stream: _service.tareasDelUsuario(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());

@@ -15,14 +15,12 @@ class _TareasScreenState extends State<TareasScreen> {
 
   List<Tarea> _tareas = [];
   bool _cargando = true;
-
-  // EXTRA: filtro con menú desplegable → 'todas', 'pendientes', 'completadas'
   String _filtro = 'todas';
 
   @override
   void initState() {
     super.initState();
-    _cargar(); // leer las tareas guardadas al abrir la pantalla
+    _cargar();
   }
 
   @override
@@ -48,10 +46,11 @@ class _TareasScreenState extends State<TareasScreen> {
     }
   }
 
+  // Avance: ya guarda en SQLite y no se borra al cerrar la app
   Future<void> _agregar() async {
     final texto = _ctrl.text.trim();
     if (texto.isEmpty) return;
-    await _db.insertar(Tarea(titulo: texto, fecha: DateTime.now().toIso8601String()));
+    await _db.insertar(Tarea(titulo: texto, fecha: '${DateTime.now()}'));
     _ctrl.clear();
     await _cargar();
   }
@@ -62,8 +61,7 @@ class _TareasScreenState extends State<TareasScreen> {
   }
 
   Future<void> _eliminar(Tarea tarea) async {
-    // Dismissible exige sacar el ítem de la lista EN EL MOMENTO
-    setState(() => _tareas.removeWhere((t) => t.id == tarea.id));
+    setState(() => _tareas.remove(tarea));
     await _db.eliminar(tarea.id!);
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
@@ -76,9 +74,8 @@ class _TareasScreenState extends State<TareasScreen> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        // ── TextField + botón Agregar ───────────────────────────────
         Padding(
-          padding: const EdgeInsets.fromLTRB(12, 12, 12, 4),
+          padding: const EdgeInsets.all(12),
           child: Row(
             children: [
               Expanded(
@@ -89,7 +86,6 @@ class _TareasScreenState extends State<TareasScreen> {
                     prefixIcon: const Icon(Icons.edit),
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                   ),
-                  onSubmitted: (_) => _agregar(),
                 ),
               ),
               const SizedBox(width: 8),
@@ -97,8 +93,7 @@ class _TareasScreenState extends State<TareasScreen> {
             ],
           ),
         ),
-
-        // ── EXTRA: menú desplegable para filtrar ───────────────────
+        // Avance: el extra, filtro de pendientes y completadas con menú desplegable
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Row(
@@ -120,8 +115,6 @@ class _TareasScreenState extends State<TareasScreen> {
             ],
           ),
         ),
-
-        // ── Lista ───────────────────────────────────────────────────
         Expanded(
           child: _cargando
               ? const Center(child: CircularProgressIndicator())
@@ -131,14 +124,10 @@ class _TareasScreenState extends State<TareasScreen> {
                       itemCount: _tareas.length,
                       itemBuilder: (context, i) {
                         final tarea = _tareas[i];
-                        // Dismissible: deslizar para eliminar
                         return Dismissible(
-                          key: ValueKey(tarea.id),
-                          direction: DismissDirection.endToStart,
+                          key: Key('${tarea.id}'),
                           background: Container(
                             color: Colors.red,
-                            alignment: Alignment.centerRight,
-                            padding: const EdgeInsets.only(right: 20),
                             child: const Icon(Icons.delete, color: Colors.white),
                           ),
                           onDismissed: (_) => _eliminar(tarea),
@@ -151,8 +140,7 @@ class _TareasScreenState extends State<TareasScreen> {
                                 decoration: tarea.completada ? TextDecoration.lineThrough : null,
                               ),
                             ),
-                            subtitle: Text('Creada: ${tarea.fecha.substring(0, 16).replaceAll('T', ' ')}'),
-                            controlAffinity: ListTileControlAffinity.leading,
+                            subtitle: Text('Creada: ${tarea.fecha}'),
                           ),
                         );
                       },
@@ -160,7 +148,7 @@ class _TareasScreenState extends State<TareasScreen> {
         ),
         const Padding(
           padding: EdgeInsets.all(8),
-          child: Text('Deslizá una tarea hacia la izquierda para eliminarla', style: TextStyle(color: Colors.grey)),
+          child: Text('Deslizá una tarea para eliminarla', style: TextStyle(color: Colors.grey)),
         ),
       ],
     );

@@ -3,7 +3,6 @@ import 'inicio_screen.dart';
 import 'tareas_screen.dart';
 import 'perfil_screen.dart';
 
-// HomeScreen: NavigationBar con 3 secciones + Drawer
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -23,7 +22,7 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
 
   void _irA(int indice) {
-    Navigator.pop(context); // cerrar el drawer
+    Navigator.pop(context);
     setState(() => _seccion = indice);
   }
 
@@ -34,7 +33,6 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(title: Text(_titulos[_seccion])),
 
-      // ── Drawer con foto de perfil, nombre y 4 ítems ──────────────
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
@@ -88,7 +86,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
       body: _pantallas[_seccion],
 
-      // ── NavigationBar: Inicio, Tareas, Perfil ────────────────────
       bottomNavigationBar: NavigationBar(
         selectedIndex: _seccion,
         onDestinationSelected: (int indice) {

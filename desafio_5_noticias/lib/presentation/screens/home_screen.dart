@@ -1,10 +1,7 @@
-// presentation/screens/home_screen.dart
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../data/repositories/posts_repository_impl.dart';
+import '../../data/services/api_service.dart';
 import '../../domain/entities/post.dart';
-import '../../domain/repositories/posts_repository.dart';
 import '../providers/posts_provider.dart';
 import 'detalle_screen.dart';
 
@@ -16,13 +13,10 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
-  // La UI solo conoce el contrato (dominio), no la API
-  final PostsRepository _repo = PostsRepositoryImpl();
+  final ApiService _apiService = ApiService();
 
-  // Guardamos el Future para no re-llamar la API en cada build
   late Future<List<Post>> _postsFuture;
 
-  // Buscador del AppBar
   bool _buscando = false;
   String _filtro = '';
   final TextEditingController _buscarCtrl = TextEditingController();
@@ -39,13 +33,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     super.dispose();
   }
 
-  // Si los posts ya están guardados en Riverpod, los usa.
-  // Si no, los pide a la API y los guarda.
+  // Avance: el extra, si los posts ya están en Riverpod no vuelve a llamar a la API
   Future<List<Post>> _cargarPosts() async {
     final guardados = ref.read(postsProvider);
     if (guardados.isNotEmpty) return guardados;
 
-    final posts = await _repo.getPosts();
+    final posts = await _apiService.getPosts();
     ref.read(postsProvider.notifier).guardar(posts);
     return posts;
   }
@@ -71,19 +64,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        // Buscador en el AppBar: cambia el título por un TextField
         title: _buscando
             ? TextField(
                 controller: _buscarCtrl,
-                autofocus: true,
-                decoration: const InputDecoration(
-                  hintText: 'Buscar por título...',
-                  border: InputBorder.none,
-                ),
-                onChanged: (texto) => setState(() => _filtro = texto.trim().toLowerCase()),
+                decoration: const InputDecoration(hintText: 'Buscar por título'),
               )
             : Text('Noticias ($guardados)'),
+        // Avance: ya anda el buscador del AppBar, filtra por título
         actions: [
+          if (_buscando)
+            IconButton(
+              icon: const Icon(Icons.check),
+              onPressed: () => setState(() => _filtro = _buscarCtrl.text.trim()),
+            ),
           IconButton(
             icon: Icon(_buscando ? Icons.close : Icons.search),
             onPressed: () {
@@ -103,7 +96,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       body: FutureBuilder<List<Post>>(
         future: _postsFuture,
         builder: (context, snapshot) {
-          // ── ESTADO 1: Todavía cargando ─────────────────────
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
               child: Column(
@@ -117,7 +109,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             );
           }
 
-          // ── ESTADO 2: Hubo un error ────────────────────────
           if (snapshot.hasError) {
             return Center(
               child: Padding(
@@ -144,9 +135,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             );
           }
 
-          // ── ESTADO 3: Datos llegaron ───────────────────────
           final List<Post> todos = snapshot.data!;
-          final List<Post> posts = todos.where((p) => p.titulo.toLowerCase().contains(_filtro)).toList();
+          final List<Post> posts = todos.where((p) => p.titulo.contains(_filtro)).toList();
 
           if (posts.isEmpty) {
             return Center(child: Text('No hay posts que contengan "$_filtro"'));
@@ -164,7 +154,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
-                // Al tocar, navegar a DetalleScreen pasando el objeto Post
                 onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(

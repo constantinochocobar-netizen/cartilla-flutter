@@ -1,15 +1,12 @@
-// El widget Shell que contiene el NavigationBar
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class AppShell extends StatelessWidget {
-  final Widget child; // la pantalla de la ruta actual
+  final Widget child;
   const AppShell({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) {
-    // Determinar qué ítem del menú está activo según la ruta
     final String location = GoRouterState.of(context).uri.path;
     int seccion = 0;
     if (location.startsWith('/posts')) seccion = 1;

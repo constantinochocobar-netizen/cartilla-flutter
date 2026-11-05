@@ -1,19 +1,14 @@
-// data/services/asistencia_service.dart
-// Guarda y lee las asistencias en Cloud Firestore.
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AsistenciaService {
   final db = FirebaseFirestore.instance;
 
-  // Fecha de hoy como texto 'AAAA-MM-DD' (ej: 2026-11-05)
-  static String fechaDe(DateTime d) => d.toIso8601String().substring(0, 10);
-  // Hora como texto 'HH:MM:SS'
-  static String horaDe(DateTime d) => d.toIso8601String().substring(11, 19);
+  static String fechaDe(DateTime d) => '${d.day}/${d.month}/${d.year}';
+  static String horaDe(DateTime d) => '${d.hour}:${d.minute}:${d.second}';
 
   static String get hoy => fechaDe(DateTime.now());
 
-  // ¿El alumno ya fue registrado hoy?
+  // Avance: antes de guardar se fija si el alumno ya estaba hoy
   Future<bool> yaRegistradoHoy(String nombre) async {
     final resultado = await db
         .collection('asistencias')
@@ -23,7 +18,6 @@ class AsistenciaService {
     return resultado.docs.isNotEmpty;
   }
 
-  // Guardar: nombre del alumno, fecha actual y hora actual
   Future<void> registrar(String nombre) async {
     final ahora = DateTime.now();
     await db.collection('asistencias').add({
@@ -34,21 +28,18 @@ class AsistenciaService {
     });
   }
 
-  // Asistencias de hoy, en tiempo real
   Stream<QuerySnapshot> asistenciasDeHoy() {
     return db.collection('asistencias').where('fecha', isEqualTo: hoy).snapshots();
   }
 
-  // Todas las asistencias (para el historial), de la fecha más nueva a la más vieja
   Stream<QuerySnapshot> historial() {
-    return db.collection('asistencias').orderBy('fecha', descending: true).snapshots();
+    return db.collection('asistencias').orderBy('creado', descending: true).snapshots();
   }
 
-  // Eliminar los registros del día actual
   Future<int> limpiarHoy() async {
     final resultado = await db.collection('asistencias').where('fecha', isEqualTo: hoy).get();
-    for (final doc in resultado.docs) {
-      await doc.reference.delete();
+    for (var doc in resultado.docs) {
+      await db.collection('asistencias').doc(doc.id).delete();
     }
     return resultado.docs.length;
   }

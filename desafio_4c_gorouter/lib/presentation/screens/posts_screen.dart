@@ -4,7 +4,7 @@ import '../../data/services/api_service.dart';
 import '../../domain/entities/post.dart';
 
 class PostsScreen extends StatefulWidget {
-  final String busqueda; // viene de la URL: /posts?search=...
+  final String busqueda;
   const PostsScreen({super.key, this.busqueda = ''});
 
   @override
@@ -14,7 +14,7 @@ class PostsScreen extends StatefulWidget {
 class _PostsScreenState extends State<PostsScreen> {
   final ApiService _api = ApiService();
   late Future<List<Post>> _postsFuture;
-  late final TextEditingController _buscarCtrl = TextEditingController(text: widget.busqueda);
+  final TextEditingController _buscarCtrl = TextEditingController();
 
   @override
   void initState() {
@@ -30,7 +30,7 @@ class _PostsScreenState extends State<PostsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final filtro = widget.busqueda.toLowerCase();
+    final filtro = widget.busqueda;
 
     return Scaffold(
       appBar: AppBar(title: Text(filtro.isEmpty ? 'Posts' : 'Posts: "${widget.busqueda}"')),
@@ -38,17 +38,23 @@ class _PostsScreenState extends State<PostsScreen> {
         children: [
           Padding(
             padding: const EdgeInsets.all(12),
-            child: TextField(
-              controller: _buscarCtrl,
-              decoration: InputDecoration(
-                labelText: 'Buscar por título',
-                prefixIcon: const Icon(Icons.search),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-              ),
-              // Al buscar, la búsqueda queda en la URL: /posts?search=texto
-              onSubmitted: (texto) => context.go(
-                texto.trim().isEmpty ? '/posts' : '/posts?search=${Uri.encodeQueryComponent(texto.trim())}',
-              ),
+            // Avance: el extra, la búsqueda queda en la URL /posts?search=...
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _buscarCtrl,
+                    decoration: InputDecoration(
+                      labelText: 'Buscar por título',
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.search),
+                  onPressed: () => context.go('/posts?search=${_buscarCtrl.text.trim()}'),
+                ),
+              ],
             ),
           ),
           Expanded(
@@ -61,7 +67,7 @@ class _PostsScreenState extends State<PostsScreen> {
                 if (snapshot.hasError) {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 }
-                final posts = snapshot.data!.where((p) => p.titulo.toLowerCase().contains(filtro)).toList();
+                final posts = snapshot.data!.where((p) => p.titulo.contains(filtro)).toList();
                 if (posts.isEmpty) return const Center(child: Text('Sin resultados'));
                 return ListView.builder(
                   itemCount: posts.length,
@@ -71,7 +77,6 @@ class _PostsScreenState extends State<PostsScreen> {
                       leading: CircleAvatar(child: Text('${post.id}')),
                       title: Text(post.titulo, maxLines: 1, overflow: TextOverflow.ellipsis),
                       subtitle: Text(post.cuerpo, maxLines: 1, overflow: TextOverflow.ellipsis),
-                      // context.push(): apila el detalle, se puede volver
                       onTap: () => context.push('/posts/${post.id}'),
                     );
                   },

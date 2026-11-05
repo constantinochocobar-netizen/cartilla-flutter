@@ -11,15 +11,14 @@ class QRScreen extends StatefulWidget {
 }
 
 class _QRScreenState extends State<QRScreen> {
-  String? _resultado; // el nombre leído del QR
+  String? _resultado;
   String _mensaje = '';
   bool _yaEstaba = false;
-  bool _activo = true; // true = escaneando, false = pausado
+  bool _activo = true;
 
   final MobileScannerController _ctrl = MobileScannerController();
   final AsistenciaService _service = AsistenciaService();
 
-  // IMPORTANTE: liberar la cámara cuando el widget se destruye
   @override
   void dispose() {
     _ctrl.dispose();
@@ -27,19 +26,19 @@ class _QRScreenState extends State<QRScreen> {
   }
 
   Future<void> _procesarCodigo(String codigo) async {
-    if (!_activo) return; // evitar procesar múltiples detecciones
+    if (!_activo) return;
     final nombre = codigo.trim();
     setState(() {
       _resultado = nombre;
       _activo = false;
       _mensaje = 'Guardando...';
     });
-    _ctrl.stop(); // pausar la cámara
+    _ctrl.stop();
 
     try {
       final yaEstaba = await _service.yaRegistradoHoy(nombre);
+      // Avance: si ya estaba registrado hoy salta la notificación de aviso
       if (yaEstaba) {
-        // Si el alumno ya está registrado hoy → notificación local de aviso
         await NotificationService.mostrar(
           titulo: 'Asistencia repetida',
           cuerpo: '$nombre ya tiene asistencia registrada hoy',
@@ -61,7 +60,6 @@ class _QRScreenState extends State<QRScreen> {
     }
   }
 
-  // Limpiar el resultado y volver a escanear
   void _escanearDeNuevo() {
     setState(() {
       _resultado = null;
@@ -77,7 +75,6 @@ class _QRScreenState extends State<QRScreen> {
       appBar: AppBar(
         title: const Text('Escanear asistencia'),
         actions: [
-          // Botón para encender/apagar la linterna
           IconButton(
             icon: const Icon(Icons.flash_on),
             onPressed: () => _ctrl.toggleTorch(),
@@ -98,7 +95,6 @@ class _QRScreenState extends State<QRScreen> {
             ),
           ),
 
-          // Panel que aparece cuando se detecta un código
           if (_resultado != null)
             Container(
               width: double.infinity,

@@ -1,4 +1,3 @@
-// DESAFÍO 5 — App de noticias con Clean Architecture
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'presentation/screens/home_screen.dart';

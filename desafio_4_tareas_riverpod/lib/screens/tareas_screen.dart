@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/tasks_provider.dart';
 
-// ConsumerStatefulWidget: tiene ref (Riverpod) y también setState / dispose
 class TareasScreen extends ConsumerStatefulWidget {
   const TareasScreen({super.key});
 
@@ -13,11 +12,9 @@ class TareasScreen extends ConsumerStatefulWidget {
 class _TareasScreenState extends ConsumerState<TareasScreen> {
   final TextEditingController _ctrl = TextEditingController();
 
-  // EXTRA: prioridad elegida para la próxima tarea
   String _prioridad = 'media';
 
-  // Color de cada prioridad
-  MaterialColor _colorPrioridad(String prioridad) {
+  Color _colorPrioridad(String prioridad) {
     switch (prioridad) {
       case 'alta':
         return Colors.red;
@@ -28,16 +25,26 @@ class _TareasScreenState extends ConsumerState<TareasScreen> {
     }
   }
 
+  Color _fondoPrioridad(String prioridad) {
+    switch (prioridad) {
+      case 'alta':
+        return Colors.red.shade50;
+      case 'baja':
+        return Colors.green.shade50;
+      default:
+        return Colors.orange.shade50;
+    }
+  }
+
   @override
   void dispose() {
-    _ctrl.dispose(); // liberar la memoria del controlador
+    _ctrl.dispose();
     super.dispose();
   }
 
   void _agregar() {
     final texto = _ctrl.text.trim();
     if (texto.isEmpty) return;
-    // ref.read: ejecuta ACCIONES sin reconstruir el widget
     ref.read(tasksProvider.notifier).agregar(texto, prioridad: _prioridad);
     _ctrl.clear();
   }
@@ -48,7 +55,6 @@ class _TareasScreenState extends ConsumerState<TareasScreen> {
 
     return Column(
       children: [
-        // ── TextField para agregar tareas ───────────────────────────
         Padding(
           padding: const EdgeInsets.all(12),
           child: Row(
@@ -61,7 +67,6 @@ class _TareasScreenState extends ConsumerState<TareasScreen> {
                     prefixIcon: const Icon(Icons.edit),
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                   ),
-                  onSubmitted: (_) => _agregar(),
                 ),
               ),
               const SizedBox(width: 8),
@@ -72,7 +77,7 @@ class _TareasScreenState extends ConsumerState<TareasScreen> {
             ],
           ),
         ),
-        // EXTRA: elegir la prioridad (alta / media / baja)
+        // Avance: el extra, ahora cada tarea tiene prioridad alta, media o baja
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),
           child: Row(
@@ -82,20 +87,18 @@ class _TareasScreenState extends ConsumerState<TareasScreen> {
               DropdownButton<String>(
                 value: _prioridad,
                 items: const [
-                  DropdownMenuItem(value: 'alta', child: Text('🔴 Alta')),
-                  DropdownMenuItem(value: 'media', child: Text('🟠 Media')),
-                  DropdownMenuItem(value: 'baja', child: Text('🟢 Baja')),
+                  DropdownMenuItem(value: 'alta', child: Text('Alta')),
+                  DropdownMenuItem(value: 'media', child: Text('Media')),
+                  DropdownMenuItem(value: 'baja', child: Text('Baja')),
                 ],
                 onChanged: (valor) => setState(() => _prioridad = valor ?? 'media'),
               ),
               const SizedBox(width: 12),
-              Expanded(child: Text('${state.pendientes} pendientes de ${state.tareas.length}', textAlign: TextAlign.end)),
+              Expanded(child: Text('${state.pendientes} pendientes de ${state.tareas.length}')),
             ],
           ),
         ),
         const SizedBox(height: 8),
-
-        // ── Lista de tareas ─────────────────────────────────────────
         Expanded(
           child: state.tareas.isEmpty
               ? const Center(child: Text('No hay tareas. ¡Agregá la primera!'))
@@ -103,11 +106,8 @@ class _TareasScreenState extends ConsumerState<TareasScreen> {
                   itemCount: state.tareas.length,
                   itemBuilder: (ctx, i) {
                     final tarea = state.tareas[i];
-                    final color = _colorPrioridad(tarea.prioridad);
                     return ListTile(
-                      // Fondo suave del color de la prioridad
-                      tileColor: color.shade50,
-                      subtitle: Text('Prioridad ${tarea.prioridad}', style: TextStyle(color: color, fontWeight: FontWeight.bold)),
+                      tileColor: _fondoPrioridad(tarea.prioridad),
                       leading: Checkbox(
                         value: tarea.completada,
                         onChanged: (_) => ref.read(tasksProvider.notifier).toggleCompletada(i),
@@ -117,6 +117,10 @@ class _TareasScreenState extends ConsumerState<TareasScreen> {
                         style: TextStyle(
                           decoration: tarea.completada ? TextDecoration.lineThrough : null,
                         ),
+                      ),
+                      subtitle: Text(
+                        'Prioridad ${tarea.prioridad}',
+                        style: TextStyle(color: _colorPrioridad(tarea.prioridad), fontWeight: FontWeight.bold),
                       ),
                       trailing: IconButton(
                         icon: const Icon(Icons.delete, color: Colors.red),

@@ -1,13 +1,11 @@
-// DESAFÍO 6 — Tareas con SQLite + Preferencias con Hive
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'presentation/screens/home_screen.dart';
 
-// main.dart — inicializar Hive antes de runApp()
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
-  await Hive.openBox('preferencias'); // abrir la 'caja' de datos
+  await Hive.openBox('preferencias');
   runApp(const MyApp());
 }
 
@@ -16,8 +14,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // ValueListenableBuilder se reconstruye solo cuando la caja cambia:
-    // así el modo oscuro se aplica a TODA la app al instante
+    // Avance: el modo oscuro se aplica a toda la app con ThemeMode
     return ValueListenableBuilder(
       valueListenable: Hive.box('preferencias').listenable(),
       builder: (context, box, _) {

@@ -4,7 +4,6 @@ import '../../data/services/auth_service.dart';
 import 'tareas_screen.dart';
 import 'perfil_screen.dart';
 
-// HomeScreen con NavigationBar y Drawer
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -18,8 +17,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final List<Widget> _pantallas = const [TareasScreen(), PerfilScreen()];
 
   Future<void> _cerrarSesion() async {
-    Navigator.pop(context); // cerrar el drawer
-    // Al cerrar sesión, el StreamBuilder de main.dart vuelve a LoginScreen
+    Navigator.pop(context);
     await AuthService().cerrarSesion();
   }
 
@@ -42,10 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   CircleAvatar(
                     radius: 32,
                     backgroundColor: cs.onPrimary,
-                    child: Text(
-                      email.isNotEmpty ? email[0].toUpperCase() : '?',
-                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: cs.primary),
-                    ),
+                    child: Icon(Icons.person, size: 32, color: cs.primary),
                   ),
                   const SizedBox(height: 10),
                   Text(email, style: TextStyle(color: cs.onPrimary, fontSize: 15)),
@@ -71,7 +66,7 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             ),
             const Divider(),
-            // Botón 'Cerrar sesión' que vuelve a la pantalla de Login
+            // Avance: cerrar sesión desde el Drawer te devuelve al login
             ListTile(
               leading: Icon(Icons.logout, color: cs.error),
               title: Text('Cerrar sesión', style: TextStyle(color: cs.error)),

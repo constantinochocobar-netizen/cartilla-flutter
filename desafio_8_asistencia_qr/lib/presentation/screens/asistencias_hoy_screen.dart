@@ -11,9 +11,7 @@ class AsistenciasHoyScreen extends StatefulWidget {
 
 class _AsistenciasHoyScreenState extends State<AsistenciasHoyScreen> {
   final AsistenciaService _service = AsistenciaService();
-  late final Stream<QuerySnapshot> _stream = _service.asistenciasDeHoy();
 
-  // Elimina de Firestore los registros del día actual
   Future<void> _limpiarDia() async {
     final borrados = await _service.limpiarHoy();
     if (mounted) {
@@ -26,12 +24,10 @@ class _AsistenciasHoyScreenState extends State<AsistenciasHoyScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Asistencias de hoy (${AsistenciaService.hoy})'),
-      ),
-      // StreamBuilder: se actualiza en tiempo real cuando alguien escanea
+      appBar: AppBar(title: Text('Asistencias de hoy (${AsistenciaService.hoy})')),
+      // Avance: la lista de hoy se actualiza sola cuando alguien escanea
       body: StreamBuilder<QuerySnapshot>(
-        stream: _stream,
+        stream: _service.asistenciasDeHoy(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -41,35 +37,34 @@ class _AsistenciasHoyScreenState extends State<AsistenciasHoyScreen> {
           }
 
           final docs = snapshot.data!.docs;
-          // Ordenamos por hora en la app (la más reciente primero)
-          final lista = docs.map((d) => d.data() as Map<String, dynamic>).toList();
-          lista.sort((a, b) => (b['hora'] ?? '').compareTo(a['hora'] ?? ''));
 
           return Column(
             children: [
               Padding(
                 padding: const EdgeInsets.all(12),
-                child: Text('Presentes: ${lista.length}',
+                child: Text('Presentes: ${docs.length}',
                     style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               ),
               Expanded(
-                child: lista.isEmpty
+                child: docs.isEmpty
                     ? const Center(child: Text('Todavía no hay asistencias hoy'))
                     : ListView.builder(
-                        itemCount: lista.length,
-                        itemBuilder: (ctx, i) => ListTile(
-                          leading: CircleAvatar(child: Text('${lista.length - i}')),
-                          title: Text(lista[i]['nombre'] ?? ''),
-                          subtitle: Text('Hora: ${lista[i]['hora']}'),
-                          trailing: const Icon(Icons.check_circle, color: Colors.green),
-                        ),
+                        itemCount: docs.length,
+                        itemBuilder: (ctx, i) {
+                          final data = docs[i].data() as Map<String, dynamic>;
+                          return ListTile(
+                            leading: const Icon(Icons.check_circle, color: Colors.green),
+                            title: Text(data['nombre'] ?? ''),
+                            subtitle: Text('Hora: ${data['hora']}'),
+                          );
+                        },
                       ),
               ),
               Padding(
                 padding: const EdgeInsets.all(12),
                 child: OutlinedButton.icon(
-                  onPressed: lista.isEmpty ? null : _limpiarDia,
-                  icon: const Icon(Icons.delete_sweep),
+                  onPressed: docs.isEmpty ? null : _limpiarDia,
+                  icon: const Icon(Icons.delete),
                   label: const Text('Limpiar registro del día'),
                 ),
               ),

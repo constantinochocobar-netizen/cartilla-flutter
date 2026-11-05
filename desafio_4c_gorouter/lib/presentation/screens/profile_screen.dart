@@ -20,7 +20,6 @@ class ProfileScreen extends StatelessWidget {
             ElevatedButton.icon(
               onPressed: () {
                 AuthService.cerrarSesion();
-                // Sin sesión, el redirect manda al /login
                 context.go('/login');
               },
               icon: const Icon(Icons.logout),

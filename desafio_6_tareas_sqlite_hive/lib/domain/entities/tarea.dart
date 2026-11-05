@@ -1,11 +1,9 @@
-// domain/entities/tarea.dart
-
 class Tarea {
-  final int? id; // null hasta que la BD lo asigna automáticamente
+  final int? id;
   final String titulo;
   final String descripcion;
   final bool completada;
-  final String prioridad; // 'alta', 'normal', 'baja'
+  final String prioridad;
   final String fecha;
 
   Tarea({
@@ -17,7 +15,6 @@ class Tarea {
     required this.fecha,
   });
 
-  // Dart → SQLite (bool no existe en SQLite: true = 1, false = 0)
   Map<String, dynamic> toMap() => {
         'id': id,
         'titulo': titulo,
@@ -27,17 +24,15 @@ class Tarea {
         'fecha': fecha,
       };
 
-  // SQLite → Dart
   factory Tarea.fromMap(Map<String, dynamic> map) => Tarea(
         id: map['id'],
         titulo: map['titulo'],
         descripcion: map['descripcion'] ?? '',
-        completada: map['completada'] == 1, // 1 = true, 0 = false
+        completada: map['completada'] == 1,
         prioridad: map['prioridad'],
         fecha: map['fecha'],
       );
 
-  // copyWith: crear una copia con algunos campos modificados
   Tarea copyWith({bool? completada, String? titulo}) => Tarea(
         id: id,
         titulo: titulo ?? this.titulo,

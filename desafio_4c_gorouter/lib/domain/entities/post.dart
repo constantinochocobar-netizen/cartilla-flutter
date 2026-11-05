@@ -1,5 +1,3 @@
-// domain/entities/post.dart
-
 class Post {
   final int id;
   final String titulo;

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-// Las preferencias se guardan en Hive y persisten al reiniciar la app
 class ConfiguracionScreen extends StatelessWidget {
   const ConfiguracionScreen({super.key});
 
@@ -13,19 +12,18 @@ class ConfiguracionScreen extends StatelessWidget {
         final bool oscuro = box.get('modoOscuro', defaultValue: false);
         final bool notificaciones = box.get('notificaciones', defaultValue: true);
 
+        // Avance: los dos Switch se guardan en Hive y quedan al reiniciar
         return ListView(
           children: [
             SwitchListTile(
               title: const Text('Modo oscuro'),
               subtitle: const Text('Se aplica a toda la app'),
-              secondary: const Icon(Icons.dark_mode),
               value: oscuro,
               onChanged: (valor) => box.put('modoOscuro', valor),
             ),
             SwitchListTile(
               title: const Text('Notificaciones'),
               subtitle: Text(notificaciones ? 'Activadas' : 'Desactivadas'),
-              secondary: const Icon(Icons.notifications),
               value: notificaciones,
               onChanged: (valor) => box.put('notificaciones', valor),
             ),

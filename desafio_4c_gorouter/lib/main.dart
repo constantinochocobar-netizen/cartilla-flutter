@@ -1,4 +1,3 @@
-// DESAFÍO 4C — Migrar a GoRouter
 import 'package:flutter/material.dart';
 import 'presentation/router/router.dart';
 
@@ -11,7 +10,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // MaterialApp.router() en lugar de MaterialApp()
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       title: 'Mi App Flutter',
@@ -19,9 +17,7 @@ class MyApp extends StatelessWidget {
         colorSchemeSeed: Colors.purple,
         useMaterial3: true,
       ),
-      // routerConfig: el GoRouter que definimos en router.dart
       routerConfig: appRouter,
-      // Ya no hay 'home:' — GoRouter maneja la pantalla inicial
     );
   }
 }

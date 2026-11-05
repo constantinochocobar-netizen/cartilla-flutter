@@ -1,11 +1,9 @@
-// DESAFÍO 3 — App con Drawer y Material 3
 import 'package:flutter/material.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
-// MyApp es StatefulWidget porque guarda el modo claro/oscuro de TODA la app
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
@@ -14,6 +12,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  // Avance: el modo oscuro lo guarda MyApp así cambia toda la app de una
   bool _modoOscuro = false;
 
   void _cambiarModo(bool valor) {
@@ -25,7 +24,6 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Drawer y Material 3',
-      // Material 3 con colorSchemeSeed: genera toda la paleta desde un color
       theme: ThemeData(
         colorSchemeSeed: Colors.teal,
         useMaterial3: true,
@@ -42,10 +40,9 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
-// ── Pantalla principal con NavigationBar y Drawer ─────────────────
 class HomeScreen extends StatefulWidget {
   final bool modoOscuro;
-  final ValueChanged<bool> onCambiarModo;
+  final Function(bool) onCambiarModo;
 
   const HomeScreen({super.key, required this.modoOscuro, required this.onCambiarModo});
 
@@ -54,7 +51,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _seccion = 0; // 0 = Inicio, 1 = Tareas, 2 = Perfil
+  int _seccion = 0;
 
   final List<String> _titulos = ['Inicio', 'Tareas', 'Perfil'];
 
@@ -65,7 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
 
   void _abrirConfiguracion() {
-    Navigator.pop(context); // IMPORTANTE: cerrar el drawer
+    Navigator.pop(context);
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -78,7 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _irASeccion(int indice) {
-    Navigator.pop(context); // cerrar el drawer
+    Navigator.pop(context);
     setState(() => _seccion = indice);
   }
 
@@ -89,11 +86,9 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(_titulos[_seccion]),
-        backgroundColor: cs.primaryContainer,
-        foregroundColor: cs.onPrimaryContainer,
       ),
 
-      // ── Drawer completo ─────────────────────────────────────────
+      // Avance: ya tiene el Drawer con la foto, 4 ítems y el Divider
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
@@ -141,7 +136,7 @@ class _HomeScreenState extends State<HomeScreen> {
               title: const Text('Configuración'),
               onTap: _abrirConfiguracion,
             ),
-            const Divider(), // línea separadora
+            const Divider(),
             ListTile(
               leading: Icon(Icons.logout, color: cs.error),
               title: Text('Cerrar sesión', style: TextStyle(color: cs.error)),
@@ -153,7 +148,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
       body: _pantallas[_seccion],
 
-      // ── NavigationBar con 3 secciones ───────────────────────────
       bottomNavigationBar: NavigationBar(
         selectedIndex: _seccion,
         onDestinationSelected: (int indice) {
@@ -181,7 +175,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-// ── Inicio: Column con banner decorado y Row con 3 estadísticas ──
 class InicioScreen extends StatelessWidget {
   const InicioScreen({super.key});
 
@@ -192,7 +185,6 @@ class InicioScreen extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        // Container decorado como banner
         Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
@@ -214,14 +206,14 @@ class InicioScreen extends StatelessWidget {
         ),
         const SizedBox(height: 20),
 
-        // Row con 3 estadísticas
+        // Avance: la Row con las 3 estadísticas abajo del banner
         Row(
           children: const [
-            Expanded(child: Estadistica(icono: Icons.pending_actions, valor: '3', etiqueta: 'Pendientes')),
+            Expanded(child: Estadistica(icono: Icon(Icons.pending_actions), valor: '3', etiqueta: 'Pendientes')),
             SizedBox(width: 12),
-            Expanded(child: Estadistica(icono: Icons.check_circle, valor: '12', etiqueta: 'Hechas')),
+            Expanded(child: Estadistica(icono: Icon(Icons.check_circle), valor: '12', etiqueta: 'Hechas')),
             SizedBox(width: 12),
-            Expanded(child: Estadistica(icono: Icons.local_fire_department, valor: '5', etiqueta: 'Días seguidos')),
+            Expanded(child: Estadistica(icono: Icon(Icons.local_fire_department), valor: '5', etiqueta: 'Días seguidos')),
           ],
         ),
         const SizedBox(height: 20),
@@ -247,9 +239,8 @@ class InicioScreen extends StatelessWidget {
   }
 }
 
-// Componente reutilizable para cada estadística
 class Estadistica extends StatelessWidget {
-  final IconData icono;
+  final Icon icono;
   final String valor;
   final String etiqueta;
 
@@ -266,7 +257,7 @@ class Estadistica extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Icon(icono, color: cs.onSecondaryContainer),
+          icono,
           const SizedBox(height: 6),
           Text(valor,
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: cs.onSecondaryContainer)),
@@ -279,7 +270,6 @@ class Estadistica extends StatelessWidget {
   }
 }
 
-// ── Tareas: lista simple con FloatingActionButton (EXTRA) ────────
 class TareasScreen extends StatelessWidget {
   const TareasScreen({super.key});
 
@@ -315,7 +305,6 @@ class TareasScreen extends StatelessWidget {
   }
 }
 
-// ── Perfil ───────────────────────────────────────────────────────
 class PerfilScreen extends StatelessWidget {
   const PerfilScreen({super.key});
 
@@ -340,10 +329,9 @@ class PerfilScreen extends StatelessWidget {
   }
 }
 
-// ── Configuración: Switch que cambia entre modo claro y oscuro ───
 class ConfiguracionScreen extends StatefulWidget {
   final bool modoOscuro;
-  final ValueChanged<bool> onCambiarModo;
+  final Function(bool) onCambiarModo;
 
   const ConfiguracionScreen({super.key, required this.modoOscuro, required this.onCambiarModo});
 
@@ -369,11 +357,10 @@ class _ConfiguracionScreenState extends State<ConfiguracionScreen> {
           SwitchListTile(
             title: const Text('Modo oscuro'),
             subtitle: const Text('Cambia el tema de la app'),
-            secondary: const Icon(Icons.dark_mode),
             value: _modoOscuro,
             onChanged: (bool nuevoValor) {
               setState(() => _modoOscuro = nuevoValor);
-              widget.onCambiarModo(nuevoValor); // avisa a MyApp para cambiar el tema
+              widget.onCambiarModo(nuevoValor);
             },
           ),
         ],

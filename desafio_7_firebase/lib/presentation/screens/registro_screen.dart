@@ -33,7 +33,7 @@ class _RegistroScreenState extends State<RegistroScreen> {
       setState(() => _error = 'Completá todos los campos.');
       return;
     }
-    // Confirmación de contraseña
+    // Avance: chequea que las dos contraseñas sean iguales
     if (pass != _confirmCtrl.text) {
       setState(() => _error = 'Las contraseñas no coinciden.');
       return;
@@ -48,8 +48,6 @@ class _RegistroScreenState extends State<RegistroScreen> {
     if (!mounted) return;
 
     if (error == null) {
-      // Registrado y logueado: volvemos a la raíz, donde el
-      // StreamBuilder ya está mostrando HomeScreen
       Navigator.pop(context);
     } else {
       setState(() {
@@ -80,10 +78,9 @@ class _RegistroScreenState extends State<RegistroScreen> {
           const SizedBox(height: 16),
           TextField(
             controller: _passCtrl,
-            obscureText: true,
             decoration: InputDecoration(
               labelText: 'Contraseña',
-              helperText: 'Mínimo 6 caracteres',
+              hintText: 'Mínimo 6 caracteres',
               prefixIcon: const Icon(Icons.lock),
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             ),
@@ -91,24 +88,23 @@ class _RegistroScreenState extends State<RegistroScreen> {
           const SizedBox(height: 16),
           TextField(
             controller: _confirmCtrl,
-            obscureText: true,
             decoration: InputDecoration(
               labelText: 'Confirmar contraseña',
               prefixIcon: const Icon(Icons.lock_outline),
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             ),
-            onSubmitted: (_) => _registrar(),
           ),
-          if (_error != null) ...[
-            const SizedBox(height: 12),
-            Text(_error!, style: TextStyle(color: cs.error)),
-          ],
+          if (_error != null)
+            Padding(
+              padding: const EdgeInsets.all(8),
+              child: Text(_error!, style: TextStyle(color: cs.error)),
+            ),
           const SizedBox(height: 24),
           ElevatedButton(
             onPressed: _cargando ? null : _registrar,
             style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
             child: _cargando
-                ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                ? const Text('Cargando...')
                 : const Text('Registrarme'),
           ),
         ],

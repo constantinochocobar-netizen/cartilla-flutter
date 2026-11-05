@@ -4,7 +4,7 @@ import '../../data/services/api_service.dart';
 import '../../domain/entities/post.dart';
 
 class DetailScreen extends StatefulWidget {
-  final int postId; // viene de la URL: /posts/:id
+  final int postId;
   const DetailScreen({super.key, required this.postId});
 
   @override
@@ -23,7 +23,6 @@ class _DetailScreenState extends State<DetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // El AppBar agrega el botón ← automáticamente porque llegamos con push
       appBar: AppBar(title: Text('Post ${widget.postId}')),
       body: FutureBuilder<Post>(
         future: _postFuture,
@@ -42,7 +41,6 @@ class _DetailScreenState extends State<DetailScreen> {
               const SizedBox(height: 16),
               Text(post.cuerpo, style: const TextStyle(fontSize: 17)),
               const SizedBox(height: 24),
-              // context.pop(): exactamente igual que Navigator.pop()
               ElevatedButton(
                 onPressed: () => context.pop(),
                 child: const Text('Volver'),

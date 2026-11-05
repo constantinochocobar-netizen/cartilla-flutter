@@ -15,7 +15,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // La cámara solo se crea cuando estamos en la sección de escaneo
     final List<Widget> pantallas = [
       const QRScreen(),
       const AsistenciasHoyScreen(),

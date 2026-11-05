@@ -2,13 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/tasks_provider.dart';
 
-// ConsumerWidget: como StatelessWidget pero con acceso a Riverpod
 class InicioScreen extends ConsumerWidget {
   const InicioScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // ref.watch: lee el estado y se reconstruye cuando cambia
+    // Avance: el contador de pendientes se actualiza solo con ref.watch
     final state = ref.watch(tasksProvider);
     final cs = Theme.of(context).colorScheme;
 
@@ -25,7 +24,6 @@ class InicioScreen extends ConsumerWidget {
             children: [
               Text('Tareas pendientes', style: TextStyle(fontSize: 18, color: cs.onPrimaryContainer)),
               const SizedBox(height: 8),
-              // El contador se actualiza solo cuando agregás o completás tareas
               Text(
                 '${state.pendientes}',
                 style: TextStyle(fontSize: 72, fontWeight: FontWeight.bold, color: cs.onPrimaryContainer),

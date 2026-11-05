@@ -27,7 +27,6 @@ class _LoginScreenState extends State<LoginScreen> {
       setState(() => _error = error);
       return;
     }
-    // Después del login usamos go(): el usuario no puede volver al login
     context.go('/');
   }
 
@@ -53,17 +52,17 @@ class _LoginScreenState extends State<LoginScreen> {
           const SizedBox(height: 16),
           TextField(
             controller: _passCtrl,
-            obscureText: true,
             decoration: InputDecoration(
               labelText: 'Contraseña',
               prefixIcon: const Icon(Icons.lock),
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             ),
           ),
-          if (_error != null) ...[
-            const SizedBox(height: 12),
-            Text(_error!, style: const TextStyle(color: Colors.red)),
-          ],
+          if (_error != null)
+            Padding(
+              padding: const EdgeInsets.all(8),
+              child: Text(_error!, style: const TextStyle(color: Colors.red)),
+            ),
           const SizedBox(height: 24),
           ElevatedButton(onPressed: _ingresar, child: const Text('Ingresar')),
         ],

@@ -1,4 +1,3 @@
-// DESAFÍO 2 — Tarjeta de presentación personal
 import 'package:flutter/material.dart';
 
 void main() {
@@ -11,7 +10,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false, // saca el cartel rojo 'DEBUG'
+      debugShowCheckedModeBanner: false,
       title: 'Tarjeta personal',
       theme: ThemeData(
         colorSchemeSeed: Colors.purple,
@@ -22,7 +21,6 @@ class MyApp extends StatelessWidget {
   }
 }
 
-// StatefulWidget porque el Switch cambia el color de fondo (estado)
 class TarjetaScreen extends StatefulWidget {
   const TarjetaScreen({super.key});
 
@@ -31,13 +29,12 @@ class TarjetaScreen extends StatefulWidget {
 }
 
 class _TarjetaScreenState extends State<TarjetaScreen> {
-  // Estado del Switch: false = fondo blanco, true = fondo de color
+  // Avance: con esta variable el Switch cambia el fondo
   bool _fondoColor = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // El Switch cambia el color de fondo de la pantalla
       backgroundColor: _fondoColor ? Colors.purple.shade100 : Colors.white,
       appBar: AppBar(
         title: const Text('Mi tarjeta'),
@@ -48,14 +45,12 @@ class _TarjetaScreenState extends State<TarjetaScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Foto circular con CircleAvatar + NetworkImage
               const CircleAvatar(
                 radius: 70,
                 backgroundImage: NetworkImage('https://picsum.photos/id/64/300/300'),
               ),
               const SizedBox(height: 20),
 
-              // Nombre completo en grande
               const Text(
                 'Micael Constantino Chocobar',
                 textAlign: TextAlign.center,
@@ -66,7 +61,6 @@ class _TarjetaScreenState extends State<TarjetaScreen> {
               ),
               const SizedBox(height: 8),
 
-              // Descripción o rol en color gris
               const Text(
                 'Técnico en Informática — Desarrollador Flutter',
                 textAlign: TextAlign.center,
@@ -77,7 +71,6 @@ class _TarjetaScreenState extends State<TarjetaScreen> {
               ),
               const SizedBox(height: 32),
 
-              // Switch que cambia el color de fondo
               SwitchListTile(
                 title: const Text('Fondo de color'),
                 subtitle: const Text('Cambia el color de fondo de la pantalla'),
@@ -91,7 +84,6 @@ class _TarjetaScreenState extends State<TarjetaScreen> {
               ),
               const SizedBox(height: 24),
 
-              // ElevatedButton que muestra un SnackBar con '¡Hola!'
               ElevatedButton.icon(
                 onPressed: () {
                   ScaffoldMessenger.of(context).showSnackBar(

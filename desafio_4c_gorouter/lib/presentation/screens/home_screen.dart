@@ -23,21 +23,18 @@ class HomeScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          // context.go() — cambia de sección (reemplaza)
           ElevatedButton.icon(
             onPressed: () => context.go('/posts'),
             icon: const Icon(Icons.article),
             label: const Text('Ver posts'),
           ),
           const SizedBox(height: 8),
-          // EXTRA: ir con un parámetro de búsqueda en la URL
           OutlinedButton.icon(
             onPressed: () => context.go('/posts?search=qui'),
             icon: const Icon(Icons.search),
             label: const Text('Buscar posts que contengan "qui"'),
           ),
           const SizedBox(height: 8),
-          // context.push() — apila encima (se puede volver)
           OutlinedButton.icon(
             onPressed: () => context.push('/posts/1'),
             icon: const Icon(Icons.open_in_new),

@@ -1,11 +1,9 @@
-// DESAFÍO 4 — App de tareas con Riverpod
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'screens/home_screen.dart';
 
 void main() {
   runApp(
-    // ProviderScope va POR ENCIMA de todo — es obligatorio
     const ProviderScope(
       child: MyApp(),
     ),
