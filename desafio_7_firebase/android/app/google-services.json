@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "403065689223",
+    "project_id": "cartilla-flutter-micael",
+    "storage_bucket": "cartilla-flutter-micael.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:403065689223:android:99a7497a31a60a46a65422",
+        "android_client_info": {
+          "package_name": "com.micael.cartilla.tareas_firebase"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDoS1uH2syYO9Y7uA__8Wy_Zfy7v6XEXzg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
