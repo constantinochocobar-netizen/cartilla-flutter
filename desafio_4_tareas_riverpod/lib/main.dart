@@ -1,0 +1,30 @@
+// DESAFÍO 4 — App de tareas con Riverpod
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'screens/home_screen.dart';
+
+void main() {
+  runApp(
+    // ProviderScope va POR ENCIMA de todo — es obligatorio
+    const ProviderScope(
+      child: MyApp(),
+    ),
+  );
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Tareas con Riverpod',
+      theme: ThemeData(
+        colorSchemeSeed: Colors.indigo,
+        useMaterial3: true,
+      ),
+      home: const HomeScreen(),
+    );
+  }
+}
